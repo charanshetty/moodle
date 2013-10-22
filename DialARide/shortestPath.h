@@ -1,5 +1,7 @@
 // C  program for Dijkstra's shortest path algorithm for adjacency
 // list representation of graph
+//
+//author :Charan
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,3 +36,6 @@ void printArr(int dist[], int n);
 float* dijkstra(struct Graph* graph, int src);
 int **allocate_board(struct Graph* graph,int Rows, int Cols);
 void AddReq(int source,int destn,int begin_interval,int end_interval,int requestno);
+void printReq(int i);
+void sortReq(int first,int last);
+void findTaxi(int** loc, int rows, int cols,int* count,int reqs);
