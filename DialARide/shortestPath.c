@@ -1,8 +1,14 @@
 #include <stdio.h>
+#include "shortestPath.h"
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
-#define n 3
+#define n 1000
+#define p 100
+#define o 10
+#define k 100
+#define w 5
+
 // A structure to represent a node in adjacency list
 struct AdjListNode
 {
@@ -44,12 +50,33 @@ struct MinHeap
 
 struct Request
 {
+	int reqnumber;
 	int source;
 	int destn;
 	int begin_interval;
 	int end_interval;
+	int reqstatus ;
 };
 struct Request requests[n];
+struct Cab
+{
+	int cabnumber;
+	int cabSource;
+	int cabDestn;
+	int Cabcapacity;
+	int revenue;
+	int cabtime;
+};
+struct Cab cab[o];
+
+int SetCab(int y,int i)
+{
+	cab[i].cabnumber=i;
+	cab[i].cabSource=y;
+	cab[i].revenue=0;
+	//printf("%d\n",cab[i].revenue);
+	return 0;
+}
 // A utility fu        addEdge(graph, 0, 1, 7);nction to create a new adjacency list node
 struct AdjListNode* newAdjListNode(int dest, int weight)
 {
@@ -76,6 +103,7 @@ int i;
 
     return graph;
 }
+
 // Adds an edge to an undirected graph
 void addEdge(struct Graph* graph, int src, int dest, int weight)
 {
@@ -86,12 +114,16 @@ void addEdge(struct Graph* graph, int src, int dest, int weight)
     graph->array[src].head = newNode;
 
     // Since graph is undirected, add an edge from dest to src also
-    newNode = newAdjListNode(src, weight);
-    newNode->next = graph->array[dest].head;
-    graph->array[dest].head = newNode;
+//    newNode = newAdjListNode(src, weight);
+//    newNode->next = graph->array[dest].head;
+//    graph->array[dest].head = newNode;
 }
+
 void AddReq(int source,int destn,int begin_interval,int end_interval,int requestno)
 {
+
+
+	requests[requestno].reqnumber=requestno;
 	requests[requestno].source=source;
 	requests[requestno].destn=destn;
 	requests[requestno].begin_interval=begin_interval;
@@ -126,36 +158,189 @@ struct Request temp;
 
     }
 }
+
+
 void printReq(int i){
-	//int i=1;
-	while(i !=0 )
+	int m=1;
+	while(m <=i )
 		{
-		printf("%d",requests[i].source);
-		printf("%d",requests[i].destn);
-		printf("%d",requests[i].begin_interval);
-		printf("%d\n",requests[i].end_interval);
-		i--;
-		}
+		printf("%d\t",requests[m].reqnumber);
+		printf("%d\t",requests[m].source);
+		printf("%d\t",requests[m].destn);
+		printf("%d\t",requests[m].begin_interval);
+		printf("%d\n",requests[m].end_interval);
+		m++;
 		}
 
-void findTaxi(int** loc, int rows, int cols,int* count,int reqs){
-	//given the location and the sorted reqs
-	//4 reqs take req one by one for its source and calculate revenue
-	//for taxi driver based on shortest distance
-	//check if there are any req from same source in the same interval
-	int x=1,distan=0;
-	while(x!=reqs+1){
-		if(count[requests[x].source]!=0){
-	distan = loc[requests[x].source-1][requests[x].destn-1];
-	printf("req %d taken and %d is cost from %d to %d \n",x,distan,requests[x].source,requests[x].destn);
-	count[requests[x].source]--;}
-		else
-		printf("req %d is not taken  from %d to %d since there is no taxi\n",x,requests[x].source,requests[x].destn);
-	x++;
+		}
+
+//given the location and the sorted reqs
+
+//4 reqs take req one by one for its source and calculate revenue
+//for taxi driver based on shortest distance
+//check if there are any req from same source in the same interval
+void findTaxi(int** loc,int** cploc,int** input, int rows, int cols,int* count,int reqs,int capacity,int cabs){
+	int i,min2=100,j=reqs-1,node=0,node1=0,x=1,y=1,distan=0,distan2=0,r=1,l=1,flag=0,stat=0,stat1=0,flag1=0,flag2=0,pos=0;
+
+	int cap[w];
+
+	for(l=0;l<cabs;l++){
+		for(i=0;i<capacity;i++)
+			cap[i]=0;
+		distan=0;
+		if((l>=1)&&(cab[l-1].Cabcapacity==0)&&(cab[l-1].cabtime==0)&&(flag==0))
+		{l--;
+		flag=1;
+		node = findneighbour(cploc,input,rows,cab[l].cabSource-1,requests[y].destn-1,cab[l].cabtime,reqs);
+		printf("%d initial node\n",node);
+		if(node==0)
+		break;
+
+		cab[l].cabSource=node;
+		}
+		for(i=0;i<capacity;i++){
+
+		for(y=1;y<=reqs;y++){
+if(((requests[y].source==cab[l].cabSource)&&(cab[l].Cabcapacity==0)&&(requests[y].reqstatus != 1)&&((cab[l].cabtime==0)||((requests[y].end_interval>=cab[l].cabtime)))))
+		stat =1;
+if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)&&((requests[y].end_interval-cab[l].cabtime)<200)&&(cab[l].Cabcapacity<capacity)))
+{
+	for(r=0;r<w;r++)
+	{
+		if((cap[r]!=0)&&(cab[l].cabDestn!=0)&&(cap[r]!=cab[l].cabDestn))
+		{
+			if(min2>loc[cap[r]-1][cab[l].cabDestn-1]){
+				min2=loc[cap[r]-1][cab[l].cabDestn-1];
+			pos=cap[r];}
+
+		}	else
+		pos=requests[y].destn;
 	}
+distan=loc[requests[y].source-1][requests[y].destn-1];
 
+if((cab[l].cabDestn!=0)&&(node!=0)){
+	node = findneighbour(cploc,input,rows,cab[l].cabDestn-1,pos-1,cab[l].cabtime,reqs);
+	printf("%d neighbour node\n",node);
+if(node==0)
+node++;
+distan2=loc[cab[l].cabDestn-1][node-1];
+}
+else
+{
+node = findneighbour(cploc,input,rows,requests[y].source-1,requests[y].destn-1,cab[l].cabtime,reqs);
+distan2=distan;
+}
+for(r=0;r<capacity;r++)
+{
+	if((node==cap[r])&&(node!=0)){
+	cap[r]=0;
+	printf("%dropping destn\n",cab[l].cabDestn);
+	cab[l].Cabcapacity--;
+	}	}
+for(r=0;r<capacity;r++){
+	if((cap[r]==0)&&(node!=0))
+	{cab[l].Cabcapacity++;
+	printf("%dpicking\n",node);
+		cap[r]=node;
+	break;}
+}
+if(cab[l].cabtime>=requests[y].begin_interval)
+{cab[l].cabtime=cab[l].cabtime+2*distan2;}
+else
+//	printf("%ddistan begin time%d\n",node,cab[l].cabDestn);
+	{cab[l].cabtime=requests[y].begin_interval+2*distan2;}
+cab[l].revenue=cab[l].revenue+distan;
+requests[y].reqstatus=1;
+cab[l].cabSource=cab[l].cabDestn;
+if(node!=0)
+cab[l].cabDestn=node;
+else
+cab[l].cabDestn=requests[y].destn;
+printf("req here %d taken and %d is cost from %d to %d revenue in cab %d %d and time %d\n",requests[y].reqnumber,distan,requests[y].source,requests[y].destn,cab[l].revenue,cab[l].cabnumber,cab[l].cabtime);
+if(stat==1)
+stat=0;
+}
+if(y==reqs&&i==capacity-1)
+{
+for(r=0;r<capacity;r++){
+		if((cap[r]!=0)&&(cab[l].Cabcapacity!=0)&&cab[l].cabDestn!=0&&cab[l].cabtime!=0)
+		{cab[l].Cabcapacity--;
+		printf("%dclear destn\n",cab[l].cabtime);
+		distan2=loc[cab[l].cabDestn-1][cap[r]-1];
+		cab[l].cabtime=cab[l].cabtime+2*distan2;
+		cab[l].cabDestn=cap[r];
+		}
+	}
+}
+if((y==reqs-1)&&(cab[l].cabtime<1440))
+{y=x++;
+	node = findneighbour(cploc,input,rows,cab[l].cabDestn-1,requests[y].destn-1,cab[l].cabtime,reqs);
+	if(node!=0&&cab[l].cabDestn!=0&&cab[l].cabtime)
+	{distan2=loc[cab[l].cabDestn-1][node-1];
+	cab[l].cabtime=cab[l].cabtime+2*distan2;}
+	if(node==0)
+		break;
+	y=1;
+	cab[l].cabDestn=node;
+	printf("%d node %d\n",cab[l].cabDestn,x);
+	flag1++;
+}
+}}flag=0;
+flag1=0;
+}int counter =0;
+
+for(i=1;i<=reqs;i++)
+{if(requests[i].reqstatus!=0)
+	counter++;
+}
+printf("%d total reqs \n",counter);
+//x++;
+//}
+int sum=0;
+for(l=0;l<=cabs;l++)
+{
+	printf("%d\t %d\t %d\n",cab[l].revenue,cab[l].Cabcapacity,cab[l].cabtime);
+//printf("%d source\n",cab[l].cabSource);
+sum=sum+cab[l].revenue;}
+printf("%d\n",sum);
 
 }
+
+int findneighbour(int loc[k][k],int input[k][k],int size,int source,int destn,int time,int reqs){
+	int min=1000;
+	int dest=-1;
+	int next_dest=0;
+	int i,j;
+	for(j=0;j<size;j++)
+
+	{
+//		if(source==j)
+//			continue;
+//		dest=-1;
+		for(i=1;i<=reqs;i++)
+		{
+			if(requests[i].source==j+1 && source!=j && requests[i].reqstatus!=1 && loc[source][j]<loc[source][destn])
+			{
+				dest=j+1;
+
+
+			if(min>loc[source][j] && dest!=-1&&min!=0)
+								{
+									min=loc[source][j];
+									next_dest=dest;
+								}
+								}
+		}
+
+	}
+		return next_dest;
+		}
+			//k[i]=input[source][i];
+//printf("%d\n",input[source][i]);
+
+		//}
+		//return 0;
+//}
 // A utility function to create a new Min Heap Node
 struct MinHeapNode* newMinHeapNode(int v, int dist)
 {
@@ -358,33 +543,6 @@ int v;
 }
 
 
-//int **allocate_board(struct Graph* graph,int Rows, int Cols)
-//{
-//
-//    // allocate Rows rows, each row is a pointer to int
-//    int **board = (int **)malloc(Rows * sizeof(int *));
-//    int row,col;
-//    int *a1;
-//
-//    // for each row allocate Cols ints
-////    for (row = 0; row < Rows; row++) {
-////        board[row] = (int *)malloc(Cols * sizeof(int));
-//    	a1 =	dijkstra(graph, 0);
-//   int i;
-//    	for(i=0;i<Rows;i++)
-//
-//   printf("%d\n", *(a1+i*2));
-////        	board[row]= a1;
-////    }
-////    for(row=0;row<Rows;row++)
-////    { for(col=0;col<Cols;col++)
-////    {
-////    	printf("%d\t",board[row][col]);
-////    }
-////    printf("\n");
-////    }
-//    return board;
-//}
 int* quicksort(int x[],int first,int last){
     int pivot,j,temp,i,m;
 

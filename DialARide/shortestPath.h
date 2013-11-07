@@ -7,11 +7,15 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
+#define p 100
+#define d 100
 // A utility function to create a new adjacency list node
 struct AdjListNode* newAdjListNode(int dest, int weight);
 // A utility function that creates a graph of V vertices
 struct Graph* createGraph(int V);
 // Adds an edge to an undirected graph
+extern int request_number;
+
 void addEdge(struct Graph* graph, int src, int dest, int weight);
 // A utility function to swap two nodes of min heap. Needed for min heapify
 // A utility function to create a new Min Heap Node
@@ -23,6 +27,7 @@ void swapMinHeapNode(struct MinHeapNode** a, struct MinHeapNode** b);
 // A standard function to heapify at given idx
 // This function also updates position of nodes when they are swapped.
 // Position is needed for decreaseKey()
+int  compare(struct Revenue *, struct Revenue *);
 void minHeapify(struct MinHeap* minHeap, int idx);
 // A utility function to check if the given minHeap is ampty or not
 int isEmpty(struct MinHeap* minHeap);
@@ -38,4 +43,9 @@ int **allocate_board(struct Graph* graph,int Rows, int Cols);
 void AddReq(int source,int destn,int begin_interval,int end_interval,int requestno);
 void printReq(int i);
 void sortReq(int first,int last);
-void findTaxi(int** loc, int rows, int cols,int* count,int reqs);
+void processReq(int** loc);
+void findTaxi(int** loc,int** cploc,int** input, int rows, int cols,int* count,int reqs,int capacity,int cabs);
+int* quicksort(int x[],int first,int last);
+int SetCab(int y,int i);
+int findneighbour(int loc[d][d],int input[d][d],int size,int source,int destn,int time,int reqs);
+
