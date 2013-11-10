@@ -46,19 +46,6 @@ int	source,destn,begin_interval,end_interval;
 	      }
 	    }
 
-
-//        addEdge(graph, 1, 0, 10);
-//        addEdge(graph, 1, 2, 25);
-//        addEdge(graph, 1, 3, 10);
-//        addEdge(graph, 2, 1, 25);
-//        addEdge(graph, 2, 3, 20);
-//        addEdge(graph, 2, 4, 30);
-//        addEdge(graph, 3, 1, 10);
-//        addEdge(graph, 3, 2, 20);
-//        addEdge(graph, 4, 2, 28);
-////        addEdge(graph, 2, 5, 2);
-//        addEdge(graph, 3, 4, 6);
-//        addEdge(graph, 4, 5, 9);
         i=0,j=0;
         int **y;
         y = malloc(locs * sizeof *y);
@@ -66,7 +53,6 @@ int	source,destn,begin_interval,end_interval;
               {
                 y[i] = malloc(locs * sizeof *y[i]);
               }
-        //int y[5][5]={0};
         int *a;
         for(j=0;j<locs;j++){
         a = dijkstra(graph, j);
@@ -76,21 +62,9 @@ int	source,destn,begin_interval,end_interval;
         for(i=0;i<locs;i++)
         {        for(j=0;j<locs;j++){
          cploc[i][j]=y[i][j];
-         printf("%d\t",cploc[i][j]);}
-        printf("\n");
-        };
-        //        addEdge(graph, 1, 2, 25);
-        //        addEdge(graph, 1, 3, 10);
-        //        addEdge(graph, 2, 1, 25);
-        //        addEdge(graph, 2, 3, 20);
-        //        addEdge(graph, 2, 4, 30);
-        //        addEdge(graph, 3, 1, 10);
-        //        addEdge(graph, 3, 2, 20);
-        //        addEdge(graph, 4, 2, 28);
-        ////        addEdge(graph, 2, 5, 2);
-        //        addEdge(graph, 3, 4, 6);
-        //        addEdge(graph, 4, 5, 9);
+         }
 
+        };
         int *b;
         int k=locs,l;
         int c[k];
@@ -99,8 +73,6 @@ int	source,destn,begin_interval,end_interval;
         b = quicksort(x,0,cabs-1);
         i=0,j=*b;
 
-        for(i=0;i<cabs;i++)
-        	printf("%d\t",*(b+i));
         i=1;
 
         while(i<cabs){
@@ -115,11 +87,6 @@ c[j]++;
         	}c[j]++;
 
 
-     for (i=0;i<=j;i++)
-  {//c[i]=c[i+1];
-    		printf("%d\n",c[i]);}
-//     c[i]=0;
-
 ////insert to structure all the arrays make it a array of structures
 ////for every position sort according to interval time
 ////
@@ -128,22 +95,14 @@ c[j]++;
 ////z more reqs and in the interval l +d*1
 ////also suppose the shortest path is p units and then we can deviate from shortest path
 ////so that he dont incur a loss
-//     for(i=0;i<5;i++)
-//     {
-//    	 for(j=0;j<5;i++)
-//    		 {cploc[i][j]=y[i][j];
-//    		 printf("1
      sortReq(1,Reqs);
-     printReq(Reqs);
 ////provide taxi to every Passenger, pass array c,
 ////compute revenue generated based on distance travelled, reduce the respective counter based on shortest
 ////distance
-printf("tillhere");
      // processReq(y);
     findTaxi(y,cploc,loc,locs,locs,c,Reqs,capacity,cabs);
 //   //without crossing the wait time of a passenger
 //    //and capacity also taken into account..
-
         return 0;
 		}
 

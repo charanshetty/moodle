@@ -17,7 +17,7 @@ struct AdjListNode
     struct AdjListNode* next;
 };
 
-// A structure to represent an adjacency liat
+// A structure to represent an adjacency list
 struct AdjList
 {
     struct AdjListNode *head;  // pointer to head node of list
@@ -74,7 +74,6 @@ int SetCab(int y,int i)
 	cab[i].cabnumber=i;
 	cab[i].cabSource=y;
 	cab[i].revenue=0;
-	//printf("%d\n",cab[i].revenue);
 	return 0;
 }
 // A utility fu        addEdge(graph, 0, 1, 7);nction to create a new adjacency list node
@@ -122,7 +121,6 @@ void addEdge(struct Graph* graph, int src, int dest, int weight)
 void AddReq(int source,int destn,int begin_interval,int end_interval,int requestno)
 {
 
-
 	requests[requestno].reqnumber=requestno;
 	requests[requestno].source=source;
 	requests[requestno].destn=destn;
@@ -130,7 +128,7 @@ void AddReq(int source,int destn,int begin_interval,int end_interval,int request
 	requests[requestno].end_interval=end_interval;
 }
 void sortReq(int first,int last){
-    int pivot,j,i,m;
+  int pivot,j,i,m;
 struct Request temp;
      if(first<last){
          pivot=first;
@@ -159,148 +157,149 @@ struct Request temp;
     }
 }
 
-
-void printReq(int i){
-	int m=1;
-	while(m <=i )
-		{
-		printf("%d\t",requests[m].reqnumber);
-		printf("%d\t",requests[m].source);
-		printf("%d\t",requests[m].destn);
-		printf("%d\t",requests[m].begin_interval);
-		printf("%d\n",requests[m].end_interval);
-		m++;
-		}
-
-		}
-
 //given the location and the sorted reqs
 
 //4 reqs take req one by one for its source and calculate revenue
 //for taxi driver based on shortest distance
 //check if there are any req from same source in the same interval
 void findTaxi(int** loc,int** cploc,int** input, int rows, int cols,int* count,int reqs,int capacity,int cabs){
-	int i,min2=100,j=reqs-1,node=0,node1=0,x=1,y=1,distan=0,distan2=0,r=1,l=1,flag=0,stat=0,stat1=0,flag1=0,flag2=0,pos=0;
-
+	int i,min2=1000,node=0,node1=0,x=1,y=1,distan=0,distan2=0,r=1,l=1,stat=0,stat1=0,flag1=0,pos=0,firstreq=1;
 	int cap[w];
-
 	for(l=0;l<cabs;l++){
 		for(i=0;i<capacity;i++)
 			cap[i]=0;
 		distan=0;
-		if((l>=1)&&(cab[l-1].Cabcapacity==0)&&(cab[l-1].cabtime==0)&&(flag==0))
-		{l--;
-		flag=1;
-		node = findneighbour(cploc,input,rows,cab[l].cabSource-1,requests[y].destn-1,cab[l].cabtime,reqs);
-		printf("%d initial node\n",node);
-		if(node==0)
-		break;
-
-		cab[l].cabSource=node;
-		}
 		for(i=0;i<capacity;i++){
-
 		for(y=1;y<=reqs;y++){
-if(((requests[y].source==cab[l].cabSource)&&(cab[l].Cabcapacity==0)&&(requests[y].reqstatus != 1)&&((cab[l].cabtime==0)||((requests[y].end_interval>=cab[l].cabtime)))))
-		stat =1;
-if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)&&((requests[y].end_interval-cab[l].cabtime)<200)&&(cab[l].Cabcapacity<capacity)))
+if(cab[l].cabtime==0)
+		{for(firstreq=1;firstreq<=reqs;firstreq++){
+	if(requests[firstreq].reqstatus!=1)
 {
-	for(r=0;r<w;r++)
+	if(2*loc[cab[l].cabSource-1][requests[firstreq].source-1]<=requests[firstreq].end_interval)
+	{cab[l].cabSource=requests[firstreq].source;
+	cab[l].cabDestn=requests[firstreq].destn;
+	cab[l].cabtime=2*loc[cab[l].cabSource-1][requests[firstreq].source-1];
+	stat =1;
+		y=firstreq;
+		break;}
+	}
+}}
+if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)&&((requests[y].end_interval-cab[l].cabtime)<50)&&((requests[y].end_interval-cab[l].cabtime)>=0)&&(cab[l].Cabcapacity<capacity)))
+{
+	for(r=0;r<capacity;r++)//if my new node is a destn of any passenger
 	{
-		if((cap[r]!=0)&&(cab[l].cabDestn!=0)&&(cap[r]!=cab[l].cabDestn))
+		if((cab[l].cabDestn==cap[r])&&(cab[l].cabDestn!=0)){
+		cap[r]=0;
+
+		cab[l].Cabcapacity--;
+		}	}
+	for(r=0;r<capacity;r++){////if my new node there is a passenger pick him up
+		if((cap[r]==0))
+		{cab[l].Cabcapacity++;
+
+			cap[r]=requests[y].destn;
+		break;}
+	}
+
+//updating cab time
+	if(cab[l].cabtime<requests[y].begin_interval)//cab have to wait at a node
+		{cab[l].cabtime=requests[y].begin_interval;}
+//finding revenue
+	distan=loc[requests[y].source-1][requests[y].destn-1];  // to calculate revenue
+	cab[l].revenue=cab[l].revenue+distan;//set revenue
+	requests[y].reqstatus=1;//request is now taken
+	if(cab[l].Cabcapacity<capacity){
+	for(r=0;r<w;r++)// to find my next node to go as per passengers destn
+	{
+		if(((cap[r]!=0)&&(cab[l].cabDestn!=0)&&(cap[r]!=cab[l].cabDestn)))
 		{
 			if(min2>loc[cap[r]-1][cab[l].cabDestn-1]){
 				min2=loc[cap[r]-1][cab[l].cabDestn-1];
 			pos=cap[r];}
-
-		}	else
+		}
+		else   //if not pick the req destn
 		pos=requests[y].destn;
 	}
-distan=loc[requests[y].source-1][requests[y].destn-1];
+if((cab[l].cabDestn!=0))  //only if i can pick one more passenger
+	{node = findneighbour(cploc,input,rows,cab[l].cabDestn-1,pos-1,cab[l].cabtime,reqs);
+}
+else if((node==0)&&(pos!=0))
+	node=pos;
+else
+	node=requests[y].destn;
+if((node!=0)){
+cab[l].cabSource=cab[l].cabDestn;// the previous destn is new cab source
+cab[l].cabDestn=node; //the new cab destn
 
-if((cab[l].cabDestn!=0)&&(node!=0)){
-	node = findneighbour(cploc,input,rows,cab[l].cabDestn-1,pos-1,cab[l].cabtime,reqs);
-	printf("%d neighbour node\n",node);
-if(node==0)
-node++;
-distan2=loc[cab[l].cabDestn-1][node-1];
+distan2=loc[cab[l].cabSource-1][cab[l].cabDestn-1];
+	cab[l].cabtime=cab[l].cabtime+2*distan2;
 }
-else
-{
-node = findneighbour(cploc,input,rows,requests[y].source-1,requests[y].destn-1,cab[l].cabtime,reqs);
-distan2=distan;
-}
-for(r=0;r<capacity;r++)
-{
-	if((node==cap[r])&&(node!=0)){
-	cap[r]=0;
-	printf("%dropping destn\n",cab[l].cabDestn);
-	cab[l].Cabcapacity--;
-	}	}
-for(r=0;r<capacity;r++){
-	if((cap[r]==0)&&(node!=0))
-	{cab[l].Cabcapacity++;
-	printf("%dpicking\n",node);
-		cap[r]=node;
-	break;}
-}
-if(cab[l].cabtime>=requests[y].begin_interval)
-{cab[l].cabtime=cab[l].cabtime+2*distan2;}
-else
-//	printf("%ddistan begin time%d\n",node,cab[l].cabDestn);
-	{cab[l].cabtime=requests[y].begin_interval+2*distan2;}
-cab[l].revenue=cab[l].revenue+distan;
-requests[y].reqstatus=1;
-cab[l].cabSource=cab[l].cabDestn;
-if(node!=0)
-cab[l].cabDestn=node;
-else
-cab[l].cabDestn=requests[y].destn;
-printf("req here %d taken and %d is cost from %d to %d revenue in cab %d %d and time %d\n",requests[y].reqnumber,distan,requests[y].source,requests[y].destn,cab[l].revenue,cab[l].cabnumber,cab[l].cabtime);
 if(stat==1)
 stat=0;
-}
-if(y==reqs&&i==capacity-1)
+}}
+else if(cab[l].Cabcapacity==capacity)//cab cant take any more reqs
 {
-for(r=0;r<capacity;r++){
-		if((cap[r]!=0)&&(cab[l].Cabcapacity!=0)&&cab[l].cabDestn!=0&&cab[l].cabtime!=0)
-		{cab[l].Cabcapacity--;
-		printf("%dclear destn\n",cab[l].cabtime);
-		distan2=loc[cab[l].cabDestn-1][cap[r]-1];
-		cab[l].cabtime=cab[l].cabtime+2*distan2;
-		cab[l].cabDestn=cap[r];
+for(r=0;r<capacity;r++)//find closest passenger destn
+		{
+			if(((cap[r]!=0)&&(cab[l].cabDestn!=0)&&(cap[r]!=cab[l].cabDestn)))
+			{
+				if(min2>loc[cap[r]-1][cab[l].cabDestn-1]){
+					{min2=loc[cap[r]-1][cab[l].cabDestn-1];
+				stat1=r;
+					pos=cap[r];}
+				}}}
+cap[stat1]=0;
+distan2=loc[cab[l].cabDestn-1][pos-1];
+cab[l].cabSource=cab[l].cabDestn;
+	while((cab[l].cabDestn!=pos)&&(cab[l].cabDestn!=0)&&(pos!=0))//go node after node to passenger destn
+			{node = findnode(cploc,input,rows,cab[l].cabDestn-1,pos-1);
+			if(node==0)
+				break;
+		for(r=0;r<capacity;r++){//check if any passneger is to be dropped
+			if(cap[r]==node)
+			{cap[r]=0;
+			cab[l].Cabcapacity--; //intermediate drop if any
+			}
+				cab[l].cabDestn=node;
+			}
 		}
-	}
-}
-if((y==reqs-1)&&(cab[l].cabtime<1440))
-{y=x++;
-	node = findneighbour(cploc,input,rows,cab[l].cabDestn-1,requests[y].destn-1,cab[l].cabtime,reqs);
-	if(node!=0&&cab[l].cabDestn!=0&&cab[l].cabtime)
-	{distan2=loc[cab[l].cabDestn-1][node-1];
-	cab[l].cabtime=cab[l].cabtime+2*distan2;}
-	if(node==0)
-		break;
-	y=1;
-	cab[l].cabDestn=node;
-	printf("%d node %d\n",cab[l].cabDestn,x);
-	flag1++;
-}
-}}flag=0;
-flag1=0;
-}int counter =0;
+		cab[l].Cabcapacity--;//th destn drop
+		cab[l].cabtime=cab[l].cabtime+2*distan2;
+		cab[l].cabDestn=pos;
+		}
 
-for(i=1;i<=reqs;i++)
-{if(requests[i].reqstatus!=0)
-	counter++;
+if((y==reqs)&&(cab[l].cabtime<1640))//reached point where cab couldnt find any more reqs
+{
+	node1 = findnextnode(cploc,rows,cab[l].cabDestn-1,cab[l].cabtime,reqs);//find any node having reqs
+	if(node1!=0&&cab[l].cabDestn!=0&&cab[l].cabtime!=0)
+	{distan2=loc[cab[l].cabDestn-1][node1-1];
+	cab[l].cabtime=cab[l].cabtime+2*distan2;}
+	if(node1==0)
+		{
+		cab[l].cabtime=cab[l].cabtime+100;
+		break;
+		}
+	y=1;
+	cab[l].cabSource=cab[l].cabDestn;
+	cab[l].cabDestn=node1;
 }
-printf("%d total reqs \n",counter);
-//x++;
-//}
+}node1=0;
+		}
+flag1=0;
+while(cab[l].Cabcapacity!=0){
+	for(r=0;r<w;r++)
+	{
+		if(cap[r]!=0)
+			{distan2=loc[cab[l].cabDestn-1][cap[r]-1];
+			cab[l].cabDestn=cap[r];
+			cab[l].Cabcapacity--;
+		cab[l].cabtime=cab[l].cabtime+2*distan2;
+	}
+}}
+}
 int sum=0;
 for(l=0;l<=cabs;l++)
 {
-	printf("%d\t %d\t %d\n",cab[l].revenue,cab[l].Cabcapacity,cab[l].cabtime);
-//printf("%d source\n",cab[l].cabSource);
 sum=sum+cab[l].revenue;}
 printf("%d\n",sum);
 
@@ -309,17 +308,46 @@ printf("%d\n",sum);
 int findneighbour(int loc[k][k],int input[k][k],int size,int source,int destn,int time,int reqs){
 	int min=1000;
 	int dest=-1;
-	int next_dest=0;
+	int next_dest=0,request;
 	int i,j;
 	for(j=0;j<size;j++)
 
 	{
-//		if(source==j)
-//			continue;
-//		dest=-1;
+
 		for(i=1;i<=reqs;i++)
 		{
-			if(requests[i].source==j+1 && source!=j && requests[i].reqstatus!=1 && loc[source][j]<loc[source][destn])
+			if((requests[i].source==j+1 && source!=j && requests[i].reqstatus!=1 && loc[source][j]<loc[source][destn])&&(requests[i].end_interval-time)>0&&(requests[i].end_interval-time)<80)
+			{
+				dest=j+1;
+
+
+			if(min>loc[source][j] && dest!=-1&&min!=0&&destn!=dest-1)
+								{
+									min=loc[source][j];
+									next_dest=dest;
+							request=requests[i].reqnumber;
+								}
+								}
+		}
+
+	}
+		return next_dest;
+		}
+
+int findnextnode(int loc[k][k],int size,int source,int time,int reqs){
+	int min=1000;
+	int dest=-1;
+	int next_dest=0,cabtime=0,req=0;
+	int i,j;
+	for(j=0;j<size;j++)
+
+	{
+		if(source==j)
+			continue;
+		dest=-1;
+		for(i=1;i<=reqs;i++)
+		{ cabtime=2*loc[source][requests[i].source-1];
+			if(requests[i].source==j+1 && requests[i].reqstatus!=1 && (requests[i].end_interval-cabtime-time)>0&& (requests[i].end_interval-time-cabtime)<50)
 			{
 				dest=j+1;
 
@@ -328,19 +356,33 @@ int findneighbour(int loc[k][k],int input[k][k],int size,int source,int destn,in
 								{
 									min=loc[source][j];
 									next_dest=dest;
+									req=requests[i].reqnumber;
 								}
-								}
-		}
+		}}
 
 	}
 		return next_dest;
 		}
-			//k[i]=input[source][i];
-//printf("%d\n",input[source][i]);
 
-		//}
-		//return 0;
-//}
+int findnode(int loc[k][k],int input[k][k],int size,int source,int destn){
+int min=1000;
+int i,j,u=0;
+
+for(i=0;i<size;i++)
+	{if(input[source][i]!=-1){
+	if(min>loc[i][destn]){
+		min=loc[i][destn];
+		if(loc[source][destn]==input[source][i]+min){
+
+			u= i+1;
+		}
+	}
+	}
+
+	}
+	return u;
+}
+
 // A utility function to create a new Min Heap Node
 struct MinHeapNode* newMinHeapNode(int v, int dist)
 {
