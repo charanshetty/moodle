@@ -129,7 +129,7 @@ void AddReq(int source,int destn,int begin_interval,int end_interval,int request
 	requests[requestno].end_interval=end_interval;
 }
 void sortReq(int first,int last){
-  int pivot,j,i,m;
+  int pivot,j,i;
 struct Request temp;
      if(first<last){
          pivot=first;
@@ -163,8 +163,8 @@ struct Request temp;
 //4 reqs take req one by one for its source and calculate revenue
 //for taxi driver based on shortest distance
 //check if there are any req from same source in the same interval
-void findTaxi(int** loc,int** cploc,int** input, int rows, int cols,int* count,int reqs,int capacity,int cabs){
-	int i,min2=1000,node=0,node1=0,x=1,y=1,distan=0,distan2=0,r=1,l=1,stat=0,stat1=0,flag1=0,pos=0,firstreq=1;
+void findTaxi(int** loc,int** cploc,int** input, int rows,int reqs,int capacity,int cabs){
+	int i,min2=1000,node=0,node1=0,y=1,distan=0,distan2=0,r=1,l=1,stat=0,stat1=0,pos=0,firstreq=1;
 	int cap[w];
 	for(l=0;l<cabs;l++){
 		for(i=0;i<capacity;i++)
@@ -222,7 +222,7 @@ if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)
 		pos=requests[y].destn;
 	}
 if((cab[l].cabDestn!=0))  //only if i can pick one more passenger
-	{node = findneighbour(cploc,input,rows,cab[l].cabDestn-1,pos-1,cab[l].cabtime,reqs);
+	{node = findneighbour(cploc,rows,cab[l].cabDestn-1,pos-1,cab[l].cabtime,reqs);
 }
 else if((node==0)&&(pos!=0))
 	node=pos;
@@ -286,7 +286,7 @@ if((y==reqs)&&(cab[l].cabtime<1640))//reached point where cab couldnt find any m
 }
 }node1=0;
 		}
-flag1=0;
+
 while(cab[l].Cabcapacity!=0){
 	for(r=0;r<capacity;r++)
 	{
@@ -306,10 +306,10 @@ printf("%d\n",sum);
 
 }
 
-int findneighbour(int loc[k][k],int input[k][k],int size,int source,int destn,int time,int reqs){
+int findneighbour(int loc[k][k],int size,int source,int destn,int time,int reqs){
 	int min=1000;
 	int dest=-1;
-	int next_dest=0,request;
+	int next_dest=0;
 	int i,j;
 	for(j=0;j<size;j++)
 
@@ -326,7 +326,7 @@ int findneighbour(int loc[k][k],int input[k][k],int size,int source,int destn,in
 								{
 									min=loc[source][j];
 									next_dest=dest;
-							request=requests[i].reqnumber;
+
 								}
 								}
 		}
@@ -338,7 +338,7 @@ int findneighbour(int loc[k][k],int input[k][k],int size,int source,int destn,in
 int findnextnode(int loc[k][k],int size,int source,int time,int reqs){
 	int min=1000;
 	int dest=-1;
-	int next_dest=0,cabtime=0,req=0;
+	int next_dest=0,cabtime=0;
 	int i,j;
 	for(j=0;j<size;j++)
 
@@ -357,7 +357,7 @@ int findnextnode(int loc[k][k],int size,int source,int time,int reqs){
 								{
 									min=loc[source][j];
 									next_dest=dest;
-									req=requests[i].reqnumber;
+
 								}
 		}}
 
@@ -367,7 +367,7 @@ int findnextnode(int loc[k][k],int size,int source,int time,int reqs){
 
 int findnode(int loc[k][k],int input[k][k],int size,int source,int destn){
 int min=1000;
-int i,j,u=0;
+int i,u=0;
 
 for(i=0;i<size;i++)
 	{if(input[source][i]!=-1){
@@ -587,7 +587,7 @@ int v;
 
 
 int* quicksort(int x[],int first,int last){
-    int pivot,j,temp,i,m;
+    int pivot,j,temp,i;
 
      if(first<last){
          pivot=first;

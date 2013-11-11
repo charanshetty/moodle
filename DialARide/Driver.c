@@ -65,28 +65,7 @@ int	source,destn,begin_interval,end_interval;
          cploc[i][j]=y[i][j];
          }
 
-        };
-        int *b;
-        int k=locs,l;
-        int c[k];
-        for(l=0;l<locs;l++)
-        c[l]=0;
-        b = quicksort(x,0,cabs-1);
-        i=0,j=*b;
-
-        i=1;
-
-        while(i<cabs){
-        	if((*(b+i)-*(b+i-1))==0){
-c[j]++;
-        	i++;}
-        	else
-        	{c[j]++;
-        		j=j+(*(b+i)-*(b+i-1));
-        		i++;
-        		}
-        	}c[j]++;
-
+        }
 
 ////insert to structure all the arrays make it a array of structures
 ////for every position sort according to interval time
@@ -101,7 +80,7 @@ c[j]++;
 ////compute revenue generated based on distance travelled, reduce the respective counter based on shortest
 ////distance
      // processReq(y);
-    findTaxi(y,cploc,loc,locs,locs,c,Reqs,capacity,cabs);
+    findTaxi(y,cploc,loc,locs,Reqs,capacity,cabs);
 //   //without crossing the wait time of a passenger
 //    //and capacity also taken into account..
         return 0;

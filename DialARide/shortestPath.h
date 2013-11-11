@@ -41,9 +41,9 @@ float* dijkstra(struct Graph* graph, int src);
 void AddReq(int source,int destn,int begin_interval,int end_interval,int requestno);
 void sortReq(int first,int last);
 
-void findTaxi(int** loc,int** cploc,int** input, int rows, int cols,int* count,int reqs,int capacity,int cabs);
+void findTaxi(int** loc,int** cploc,int** input, int rows,int reqs,int capacity,int cabs);
 int* quicksort(int x[],int first,int last);
 int SetCab(int y,int i);
-int findneighbour(int loc[d][d],int input[d][d],int size,int source,int destn,int time,int reqs);
+int findneighbour(int loc[d][d],int size,int source,int destn,int time,int reqs);
 int findnextnode(int loc[d][d],int size,int source,int time,int reqs);
 int findnode(int loc[d][d],int input[d][d],int size,int source,int destn);
