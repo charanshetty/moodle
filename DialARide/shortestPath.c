@@ -1,13 +1,14 @@
+//function definitions
 #include <stdio.h>
 #include "shortestPath.h"
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
-#define n 1000
-#define p 100
-#define o 10
-#define k 100
-#define w 5
+#define n 1000  // no. of reqs
+#define p 100   //location size
+#define o 100    //number of cabs
+#define k 100    //location size
+#define w 50    //cab capacity
 
 // A structure to represent a node in adjacency list
 struct AdjListNode
@@ -209,7 +210,7 @@ if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)
 	cab[l].revenue=cab[l].revenue+distan;//set revenue
 	requests[y].reqstatus=1;//request is now taken
 	if(cab[l].Cabcapacity<capacity){
-	for(r=0;r<w;r++)// to find my next node to go as per passengers destn
+	for(r=0;r<capacity;r++)// to find my next node to go as per passengers destn
 	{
 		if(((cap[r]!=0)&&(cab[l].cabDestn!=0)&&(cap[r]!=cab[l].cabDestn)))
 		{
@@ -287,7 +288,7 @@ if((y==reqs)&&(cab[l].cabtime<1640))//reached point where cab couldnt find any m
 		}
 flag1=0;
 while(cab[l].Cabcapacity!=0){
-	for(r=0;r<w;r++)
+	for(r=0;r<capacity;r++)
 	{
 		if(cap[r]!=0)
 			{distan2=loc[cab[l].cabDestn-1][cap[r]-1];
