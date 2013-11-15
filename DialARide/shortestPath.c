@@ -160,7 +160,7 @@ struct Request temp;
 
 //given the location and the sorted reqs
 
-//4 reqs take req one by one for its source and calculate revenue
+//take req one by one for its source and calculate revenue
 //for taxi driver based on shortest distance
 //check if there are any req from same source in the same interval
 void findTaxi(int** loc,int** cploc,int** input, int rows,int reqs,int capacity,int cabs){
@@ -168,7 +168,7 @@ void findTaxi(int** loc,int** cploc,int** input, int rows,int reqs,int capacity,
 	int cap[w];
 	for(l=0;l<cabs;l++){
 		for(i=0;i<capacity;i++)
-			cap[i]=0;
+		cap[i]=0;
 		distan=0;
 		for(i=0;i<capacity;i++){
 		for(y=1;y<=reqs;y++){
@@ -189,15 +189,13 @@ if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)
 {
 	for(r=0;r<capacity;r++)//if my new node is a destn of any passenger
 	{
-		if((cab[l].cabDestn==cap[r])&&(cab[l].cabDestn!=0)){
+		if((cab[l].cabDestn==cap[r])&&(cab[l].cabDestn!=0)&&(cab[l].Cabcapacity!=0)){
 		cap[r]=0;
-
 		cab[l].Cabcapacity--;
 		}	}
 	for(r=0;r<capacity;r++){////if my new node there is a passenger pick him up
 		if((cap[r]==0))
 		{cab[l].Cabcapacity++;
-
 			cap[r]=requests[y].destn;
 		break;}
 	}
@@ -209,6 +207,7 @@ if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)
 	distan=loc[requests[y].source-1][requests[y].destn-1];  // to calculate revenue
 	cab[l].revenue=cab[l].revenue+distan;//set revenue
 	requests[y].reqstatus=1;//request is now taken
+	printf("req here %d taken and %d is cost from %d to %d revenue in cab %d %d and time %d and capacity %d\n",requests[y].reqnumber,distan,requests[y].source,requests[y].destn,cab[l].revenue,cab[l].cabnumber,cab[l].cabtime,cab[l].Cabcapacity);
 	if(cab[l].Cabcapacity<capacity){
 	for(r=0;r<capacity;r++)// to find my next node to go as per passengers destn
 	{
@@ -224,17 +223,16 @@ if((stat==1)||((cab[l].cabDestn==requests[y].source)&&(requests[y].reqstatus!=1)
 if((cab[l].cabDestn!=0))  //only if i can pick one more passenger
 	{node = findneighbour(cploc,rows,cab[l].cabDestn-1,pos-1,cab[l].cabtime,reqs);
 }
-else if((node==0)&&(pos!=0))
+if((node==0)&&(pos!=0))
 	node=pos;
-else
+else if((node==0)&&(pos==0))
 	node=requests[y].destn;
-if((node!=0)){
+
 cab[l].cabSource=cab[l].cabDestn;// the previous destn is new cab source
 cab[l].cabDestn=node; //the new cab destn
-
 distan2=loc[cab[l].cabSource-1][cab[l].cabDestn-1];
-	cab[l].cabtime=cab[l].cabtime+2*distan2;
-}
+cab[l].cabtime=cab[l].cabtime+2*distan2;
+
 if(stat==1)
 stat=0;
 }}
@@ -245,30 +243,24 @@ for(r=0;r<capacity;r++)//find closest passenger destn
 			if(((cap[r]!=0)&&(cab[l].cabDestn!=0)&&(cap[r]!=cab[l].cabDestn)))
 			{
 				if(min2>loc[cap[r]-1][cab[l].cabDestn-1]){
-					{min2=loc[cap[r]-1][cab[l].cabDestn-1];
+					min2=loc[cap[r]-1][cab[l].cabDestn-1];
 				stat1=r;
-					pos=cap[r];}
+					pos=cap[r];
 				}}}
-cap[stat1]=0;
+//for(r=0;r<capacity;r++)//find closest passenger destn
+//		{
+//if(cap[r]==pos)
+//	{
+	cap[stat1]=0;
+	cab[l].Cabcapacity--;//th destn drop
+//	}
+//	}
 distan2=loc[cab[l].cabDestn-1][pos-1];
 cab[l].cabSource=cab[l].cabDestn;
-	while((cab[l].cabDestn!=pos)&&(cab[l].cabDestn!=0)&&(pos!=0))//go node after node to passenger destn
-			{node = findnode(cploc,input,rows,cab[l].cabDestn-1,pos-1);
-			if(node==0)
-				break;
-		for(r=0;r<capacity;r++){//check if any passneger is to be dropped
-			if(cap[r]==node)
-			{cap[r]=0;
-			cab[l].Cabcapacity--; //intermediate drop if any
-			}
-				cab[l].cabDestn=node;
-			}
-		}
-		cab[l].Cabcapacity--;//th destn drop
+
 		cab[l].cabtime=cab[l].cabtime+2*distan2;
 		cab[l].cabDestn=pos;
 		}
-
 if((y==reqs)&&(cab[l].cabtime<1640))//reached point where cab couldnt find any more reqs
 {
 	node1 = findnextnode(cploc,rows,cab[l].cabDestn-1,cab[l].cabtime,reqs);//find any node having reqs
@@ -303,6 +295,14 @@ for(l=0;l<=cabs;l++)
 {
 sum=sum+cab[l].revenue;}
 printf("%d\n",sum);
+
+int counter =0;
+
+for(i=1;i<=reqs;i++)
+{if(requests[i].reqstatus!=0)
+	counter++;
+}
+printf("%d total reqs \n",counter);
 
 }
 
